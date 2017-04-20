@@ -9,6 +9,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/ec2"
+	"github.com/olekukonko/tablewriter"
 )
 
 // This example will list instances with a filter
@@ -37,5 +38,20 @@ func main() {
 		fmt.Println("there was an error listing instances in", awsRegion, err.Error())
 		log.Fatal(err.Error())
 	}
-	fmt.Printf("%+v\n", *resp)
+
+	insid := *resp.Reservations[0].Instances[0].InstanceId
+	privp := *resp.Reservations[0].Instances[0].PrivateIpAddress
+
+	data := [][]string{
+		[]string{insid, privp},
+	}
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{"Instance ID", "PrivateIP"})
+	for _, v := range data {
+		table.Append(v)
+	}
+	table.Render()
+
+	//fmt.Println(insid, privp)
+
 }
